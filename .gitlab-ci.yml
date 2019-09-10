@@ -19,8 +19,7 @@ merge_request:
   tags:
     - kvm
   only:
-    variables:
-      - $MERGE_REQUEST == "true"
+    - merge_requests
   script:
     # run emulator
     - bash  <(curl -s https://git.sensorberg.io/snippets/5/raw)
