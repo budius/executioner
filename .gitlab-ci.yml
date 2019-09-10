@@ -1,0 +1,52 @@
+image: bitriseio/docker-android:latest
+
+variables:
+  GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
+
+cache:
+  key: $CI_PROJECT_NAME
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+merge_request:
+  stage: test
+  artifacts:
+    when: always
+    paths:
+      - executioner/build/reports
+      - executioner-testing/build/reports
+  tags:
+    - kvm
+  only:
+    variables:
+      - $MERGE_REQUEST == "true"
+  script:
+    # run emulator
+    - bash  <(curl -s https://git.sensorberg.io/snippets/5/raw)
+    # build
+    - ./gradlew clean assembleDebug assembleAndroidTest testDebugUnitTest
+    # await for emulator
+    - bash  <(curl -s https://git.sensorberg.io/snippets/4/raw)
+    - ./gradlew cAT
+
+deploy_release:
+  stage: deploy
+  artifacts:
+    when: always
+    paths:
+      - executioner/build/outputs/aar
+      - executioner-testing/build/outputs/aar
+  tags:
+    - kvm
+  only:
+    - tags
+  script:
+    # run emulator
+    - bash  <(curl -s https://git.sensorberg.io/snippets/5/raw)
+    # build
+    - ./gradlew clean assembleDebug assembleAndroidTest testDebugUnitTest
+    # await for emulator
+    - bash  <(curl -s https://git.sensorberg.io/snippets/4/raw)
+    - ./gradlew cAT
+    - ./gradlew uploadArchives

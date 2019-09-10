@@ -1,0 +1,2 @@
+include ':sample', ':executioner', ':executioner-testing'
+rootProject.name='Executioner'
