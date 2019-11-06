@@ -33,4 +33,14 @@ dependencies {
 }
 
 
-apply from: '../upload.gradle'
+apply plugin: "com.vanniktech.maven.publish"
+mavenPublish {
+    targets {
+        uploadArchives {
+            signing = false
+            releaseRepositoryUrl = findProperty("EXECUTIONER_URL", null)
+            repositoryUsername = findProperty("MAVEN_JCENTER_USERNAME", null)
+            repositoryPassword = findProperty("MAVEN_JCENTER_PASSWORD", null)
+        }
+    }
+}
